@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<DevRes>
+
+    <Images>
+        <!-- Application / UI icons -->
+        <Res id="appIcon" path="Work/Common/Icons/chess_knight_white.png"/>
+
+        <Res id="reset"    path="Work/Common/Icons/arrow_cycle.png"/>
+        <Res id="start"    path="Work/Common/Icons/arrow_right.png"/>
+	<Res id="backward" path="Work/Common/Icons/arrow_left.png"/>
+        <Res id="stop"     path="Work/Common/Icons/x.png"/>
+        <Res id="settings" path="Work/Common/Icons/SettingsBlue48.png"/>
+
+        <!-- Chess board -->
+        <Res id="board" path="Work/Common/Images/Chess/ChessBoard1024.jpg"/>
+
+        <!-- Chess pieces -->
+        <Res id="blackKing" path="Work/Common/Images/Chess/DarkKing.png"/>
+        <Res id="whiteKing" path="Work/Common/Images/Chess/WhiteKing.png"/>
+        <Res id="whitePawn" path="Work/Common/Images/Chess/WhitePawn.png"/>
+
+        <!-- Alpha channel -> PNG required -->
+        <Res id="whiteQueen" path="Work/Common/Images/Chess/QueenWhite.png"/>
+    </Images>
+
+    <Sounds>
+        <Res id="move"    path="Work/Common/Sounds/ChessCapture.wav"/>
+        <Res id="success" path="Work/Common/Sounds/MissionSuccess.wav"/>
+    </Sounds>
+
+</DevRes>
