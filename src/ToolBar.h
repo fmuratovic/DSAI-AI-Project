@@ -16,7 +16,9 @@ class ViewChessBoard;
 class ToolBar : public gui::ToolBar
 {
     ViewSettings _viewSettings;
-    gui::Image _imgReset;
+    gui::Image _imgUndo;
+    gui::Image _imgRedo;
+
 public:
     ToolBar(ViewChessBoard* pViewChessBoard, gui::Image* imgRun);
 };

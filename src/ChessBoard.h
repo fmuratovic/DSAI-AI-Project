@@ -92,6 +92,10 @@ public:
 
     static int popLSB(uint64_t& bb);
 
+    int getEnPassantSq() const { return _enPassantSq; }
+
+    void setEnPassantSq(int sq) { _enPassantSq = sq; }
+
 private:
     static constexpr uint64_t FILE_A = 0x0101010101010101ULL;
     static constexpr uint64_t FILE_B = 0x0202020202020202ULL;
@@ -123,4 +127,6 @@ private:
     int blackKingSquare;
 
     bool sideToMove = true;
+
+    int _enPassantSq = -1;
 };

@@ -8,6 +8,8 @@
 
 constexpr td::BYTE cMenuApp = 10;
 constexpr td::BYTE cMenuGame = 30;
-enum class Message : td::BYTE {Stop=0, StopOnGoal, AIMove};
 constexpr td::BYTE cResetActionItem = 10;
 constexpr td::BYTE cStartStopActionItem = 20;
+constexpr td::BYTE cUndoActionItem = 30;
+constexpr td::BYTE cRedoActionItem = 40;
+enum class Message : td::BYTE { Stop = 0, StopOnGoal, AIMove, BotMove };

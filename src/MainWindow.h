@@ -120,6 +120,12 @@ protected:
             case cResetActionItem:
                 _mainView.reset();
                 return true;
+            case cUndoActionItem:
+    _mainView.undoMove();
+    return true;
+case cRedoActionItem:
+    _mainView.redoMove();
+    return true;
             default:
                 break;
             }
