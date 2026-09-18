@@ -1,0 +1,38 @@
+# rename this file to .gitignore in DSAI-AI-Project, then run:
+#   git rm -r --cached build CMakeFiles CMakeCache.txt Makefile cmake_install.cmake Chess.app
+#   git commit -m "remove build artifacts"
+
+# IDE
+.vs/
+.idea/
+*.vcxproj.filters
+*.vcxproj.user
+*.sln.docstates
+.DS_Store
+
+# CMake / build output (never commit these: they contain absolute paths of one machine)
+build/
+out/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+_deps/
+*.app/
+
+# Binaries
+*.exe
+*.dll
+*.lib
+*.dylib
+*.so
+*.o
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.idb
+
+# natID build output location
+Out/

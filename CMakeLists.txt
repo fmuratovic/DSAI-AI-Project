@@ -26,6 +26,7 @@ if (WIN32)
 	string(REPLACE "\\" "/" HOME_ROOT "${HOME_ROOT}")
 endif()
 set(WORK_ROOT ${HOME_ROOT}/Work)
+set(NATID_SDK_ROOT ${WORK_ROOT}) 
 if (NOT EXISTS "${WORK_ROOT}/DevEnv/Common.cmake")
 	message(FATAL_ERROR
 		"natGUI framework not found at ${WORK_ROOT}/DevEnv. This project needs "
@@ -38,5 +39,3 @@ include(${WORK_ROOT}/DevEnv/Common.cmake)
 include(${WORK_ROOT}/DevEnv/natGUI.cmake)
 
 include(chess.cmake)
-
-
