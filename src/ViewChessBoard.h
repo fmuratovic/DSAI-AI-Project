@@ -84,6 +84,11 @@ protected:
             if (th.joinable())
                 th.join();
         }
+        case Message::BotMove:
+        {
+            _soundMove.play();
+            reDraw();
+        }
         break;
 
         default:
@@ -105,6 +110,11 @@ public:
     {
         setPreferredFrameRateRange(60, 60);
         enableResizeEvent(true);
+
+        // ← add these two lines here
+        auto cb = std::make_shared<gui::thread::MainThreadFunction1>(
+            std::bind(&ViewChessBoard::chessEngineCallBack, this, std::placeholders::_1));
+        _chess.setBotCallBack(cb);
     }
 
     void onWorkerCompleted()
@@ -196,6 +206,19 @@ public:
             _chess.maybeBotMove();
 
         _fnUpdateMenuAndTB();
+        reDraw();
+    }
+
+    void undoMove()
+    {
+        _chess.undoMove();
+        reDraw();
+    }
+
+
+    void redoMove()
+    {
+        _chess.redoMove();
         reDraw();
     }
 };

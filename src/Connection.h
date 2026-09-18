@@ -8,6 +8,7 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <functional>
 
 #include <td/Types.h>
 #include <gui/Canvas.h>
@@ -49,6 +50,12 @@ private:
 
     static constexpr float DRAG_THRESH = 3.0f; // pixels
 
+    int _lastMoveFrom = -1;
+    int _lastMoveTo = -1;
+
+    std::vector<std::pair<MoveBB, int>> _moveHistory; // move + enPassantSq before move
+
+    std::vector<std::pair<MoveBB, int>> _redoStack;
 
 
 
@@ -56,6 +63,9 @@ private:
     bool _vsBot = false;
     bool _botIsWhite = false;   // common: bot plays black
     bool _botThinking = false;  // prevents double moves
+
+    std::function<void()> _onBotMoveDone;
+    gui::thread::MainThreadSharedFunction1 _botCallBack;
 
 
     // -----------------------------
@@ -289,27 +299,34 @@ public:
     {
         if (!_vsBot) return;
         if (_botThinking) return;
-
         bool sideNow = _board.getSideToMove();
         if (sideNow != _botIsWhite) return;
 
         _botThinking = true;
 
-        std::thread([this]() {
+        _workingThread = std::thread([this]() {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
             {
                 std::lock_guard<std::mutex> lock(_mutex);
                 auto legal = _board.getLegalMovesBB(_botIsWhite);
                 if (!legal.empty()) {
                     MoveBB best = _board.findBestMoveBB(_botDepth, _botIsWhite);
                     _board.makeMoveBB(best);
+
+                    _moveHistory.push_back({ best, _board.getEnPassantSq() });
+
+                    _redoStack.clear();
+
+                    _lastMoveFrom = best.from;
+                    _lastMoveTo = best.to;
                 }
             }
-
             _botThinking = false;
-
-            }).detach();
+            td::INT4 iMsg = td::INT4(Message::BotMove);
+            td::Variant varMsg(iMsg);
+            gui::thread::asyncExecInMainThread(_botCallBack, varMsg);
+            });
+        _workingThread.detach();
     }
 
 
@@ -414,6 +431,23 @@ public:
 
             drawPiece(p, rect);
         }
+
+        if (_lastMoveFrom != -1)
+        {
+            int file = _lastMoveFrom & 7;
+            int rank = _lastMoveFrom >> 3;
+            gui::Rect rc;
+            getCellRect(rc, file, rank);
+            gui::Shape::drawRect(rc, 0.25f, td::ColorID::Yellow);
+        }
+        if (_lastMoveTo != -1)
+        {
+            int file = _lastMoveTo & 7;
+            int rank = _lastMoveTo >> 3;
+            gui::Rect rc;
+            getCellRect(rc, file, rank);
+            gui::Shape::drawRect(rc, 0.25f, td::ColorID::Yellow);
+        }
     }
 
 
@@ -473,6 +507,14 @@ public:
             if (chosen)
             {
                 _board.makeMoveBB(*chosen);
+
+                _moveHistory.push_back({ *chosen, _board.getEnPassantSq() });
+
+                _redoStack.clear();
+
+                _lastMoveFrom = _selectedSq;
+                _lastMoveTo = sq;
+
                 _selectedSq = -1;
                 _selectedMovesMask = 0ULL;
                 maybeBotMove();
@@ -706,6 +748,88 @@ public:
     }
 
     bool isBotThinking() const { return _botThinking; }
+
+    void setOnBotMoveDone(std::function<void()> cb) { _onBotMoveDone = cb; }
+
+    void setBotCallBack(const gui::thread::MainThreadSharedFunction1& cb) { _botCallBack = cb; }
+
+    void undoMove()
+    {
+        if (_moveHistory.empty()) return;
+
+        if (_vsBot && _moveHistory.size() >= 2)
+        {
+            _redoStack.push_back(_moveHistory.back());
+            _board.undoMoveBB(_moveHistory.back().first);
+            _board.setEnPassantSq(_moveHistory.back().second);
+            _moveHistory.pop_back();
+
+            _redoStack.push_back(_moveHistory.back());
+            _board.undoMoveBB(_moveHistory.back().first);
+            _board.setEnPassantSq(_moveHistory.back().second);
+            _moveHistory.pop_back();
+        }
+        else if (!_vsBot && !_moveHistory.empty())
+        {
+            _redoStack.push_back(_moveHistory.back());
+            _board.undoMoveBB(_moveHistory.back().first);
+            _board.setEnPassantSq(_moveHistory.back().second);
+            _moveHistory.pop_back();
+        }
+
+        if (!_moveHistory.empty())
+        {
+            _lastMoveFrom = _moveHistory.back().first.from;
+            _lastMoveTo = _moveHistory.back().first.to;
+        }
+        else
+        {
+            _lastMoveFrom = -1;
+            _lastMoveTo = -1;
+        }
+
+        _selectedSq = -1;
+        _selectedMovesMask = 0ULL;
+    }
+
+    void redoMove()
+    {
+        if (_redoStack.empty()) return;
+
+        if (_vsBot && _redoStack.size() >= 2)
+        {
+            auto [move, epSq] = _redoStack.back();
+            _board.makeMoveBB(move);
+            _moveHistory.push_back({ move, epSq });
+            _redoStack.pop_back();
+
+            auto [move2, epSq2] = _redoStack.back();
+            _board.makeMoveBB(move2);
+            _moveHistory.push_back({ move2, epSq2 });
+            _redoStack.pop_back();
+        }
+        else if (!_redoStack.empty())
+        {
+            auto [move, epSq] = _redoStack.back();
+            _board.makeMoveBB(move);
+            _moveHistory.push_back({ move, epSq });
+            _redoStack.pop_back();
+        }
+
+        if (!_moveHistory.empty())
+        {
+            _lastMoveFrom = _moveHistory.back().first.from;
+            _lastMoveTo = _moveHistory.back().first.to;
+        }
+        else
+        {
+            _lastMoveFrom = -1;
+            _lastMoveTo = -1;
+        }
+
+        _selectedSq = -1;
+        _selectedMovesMask = 0ULL;
+    }
 
 
 };

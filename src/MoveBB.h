@@ -24,6 +24,7 @@ struct MoveBB {
     bool promotion = false;         // is this a promotion
     Piece promotionPiece = EMPTY;   // piece promoted to
     uint8_t flags = QUIET;  // MoveFlags
+    int8_t prevEnPassantSq = -1;
 
     bool prevWCK = false;
     bool prevWCQ = false;
