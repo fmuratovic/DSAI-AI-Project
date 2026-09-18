@@ -12,6 +12,8 @@ class MainWindow : public gui::Window
 {
 private:
     bool _startVsBot = false;
+    int  _startBudgetMs = 350;   // ms per bot move, chosen on the start screen
+    bool _startBotIsWhite = false;
 
 protected:
     std::unique_ptr<ModeWindow> _modeWindow;
@@ -38,7 +40,12 @@ public:
         setCentralView(&_mainView);
     }
 
-    void setStartMode(bool vsBot) { _startVsBot = vsBot; }
+    void setStartMode(bool vsBot, int budgetMs = 350, bool botIsWhite = false)
+    {
+        _startVsBot = vsBot;
+        if (budgetMs >= 20 && budgetMs <= 60000) _startBudgetMs = budgetMs;
+        _startBotIsWhite = botIsWhite;
+    }
 
 protected:
     void onInitialAppearance() override
@@ -52,7 +59,10 @@ protected:
             return;
         }
 
-        _mainView.setVsBot(true, false, 4);
+        // The budget must be set BEFORE setVsBot, because setVsBot
+        // triggers the bot's opening move when it plays white.
+        _mainView.setBotTimeBudget(_startBudgetMs);
+        _mainView.setVsBot(true, _startBotIsWhite, 4 /*unused fallback depth*/);
 
         // Singleplayer: show ModeWindow once
         /*if (!_modeWindow)
@@ -81,6 +91,17 @@ protected:
 
     void updateMenuAndTB()
     {
+        // Reflect engine state in the window title. Cheap, always visible,
+        // and it can't stack up the way repeated dialogs would.
+        // Priority: a finished game outranks a "thinking" notice.
+        const char* status = _mainView.getStatusText();
+        if (status && status[0])
+            setTitle(status);
+        else if (_mainView.isBotThinking())
+            setTitle(tr("botThinking"));
+        else
+            setTitle(tr("appTitle"));
+
         bool isGamePlaying = _mainView.isPlaying();
 
         gui::MenuItem* pMenuItem = _mainMenuBar.getItem(cMenuGame, 0, 0, cStartStopActionItem);

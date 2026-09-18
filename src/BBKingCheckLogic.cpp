@@ -5,15 +5,29 @@ bool ChessBoard::pawnAttacksKingBB(int kingSquare, bool isWhite) const {
 	uint64_t king = 1ULL << kingSquare;
 
 
+	// Instead of asking "which pawns attack the king?", we ask "from which
+	// squares COULD a pawn attack the king?" and intersect that with the
+	// enemy pawn bitboard -- one shift-and-mask instead of a loop.
+	//
+	// Black pawns capture downwards, so a black pawn attacking a white king
+	// on square k must sit ABOVE it, on k+7 or k+9. White pawns capture
+	// upwards, so a white pawn attacking a black king sits BELOW it, on
+	// k-7 or k-9. (These two cases were previously swapped, which meant
+	// pawn checks against the king were never detected at all -- the king
+	// could legally walk onto a square guarded by an enemy pawn. Caught by
+	// perft on Position 3, where Ka5-b6 was generated despite the c7 pawn
+	// covering b6.)
 	if (isWhite) {
-		uint64_t pawnAttacks = (king & NOT_FILE_H) >> 7; // from left
-		pawnAttacks |= (king & NOT_FILE_A) >> 9;// from right
-		return pawnAttacks & blackPawns;
+		// Look up-right (+9) and up-left (+7) for black pawns.
+		uint64_t pawnAttacks = (king & NOT_FILE_H) << 9;
+		pawnAttacks |= (king & NOT_FILE_A) << 7;
+		return (pawnAttacks & blackPawns) != 0;
 	}
 	else {
-		uint64_t pawnAttacks = (king & NOT_FILE_H) << 9; // from left
-		pawnAttacks |= (king & NOT_FILE_A) << 7; // from right
-		return pawnAttacks & whitePawns;
+		// Look down-left (-9) and down-right (-7) for white pawns.
+		uint64_t pawnAttacks = (king & NOT_FILE_A) >> 9;
+		pawnAttacks |= (king & NOT_FILE_H) >> 7;
+		return (pawnAttacks & whitePawns) != 0;
 	}
 }
 

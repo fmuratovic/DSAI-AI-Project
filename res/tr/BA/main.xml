@@ -35,5 +35,23 @@
         <Res id="chbRandomSol" tr="Generiši proizvoljno rješenje"/>
         <Res id="chbPlaySound" tr="Puštati zvuk u toku pretrage"/>
 
+        <!-- Start screen / game status (added) -->
+        <Res id="Difficulty" tr="Težina"/>
+        <Res id="Easy" tr="Lako"/>
+        <Res id="Normal" tr="Normalno"/>
+        <Res id="Hard" tr="Teško"/>
+        <Res id="Expert" tr="Ekspert"/>
+        <Res id="Play as" tr="Igraj kao"/>
+        <Res id="Promote pawns to" tr="Promocija pijuna u"/>
+        <Res id="Queen" tr="Kraljica"/>
+        <Res id="Rook" tr="Top"/>
+        <Res id="Bishop" tr="Biskup"/>
+        <Res id="Knight" tr="Konj"/>
+        <Res id="New Game" tr="Nova igra"/>
+        <Res id="Multiplayer" tr="Dva igrača"/>
+        <Res id="botThinking" tr="Šah - razmišlja..."/>
+        <Res id="gameOver" tr="Igra završena"/>
+        <Res id="newGame" tr="Nova igra"/>
+        <Res id="keepBoard" tr="Ostavi tablu"/>
     </Translations>
 </DevRes>

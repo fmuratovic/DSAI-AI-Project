@@ -1,7 +1,7 @@
 #pragma once
 #include <gui/Window.h>
 
-#include "MainView.h"
+#include "mainView.h"   // exact case matters on Linux/macOS
 #include "MainWindow.h"
 
 class StartWindow : public gui::Window
@@ -11,19 +11,31 @@ private:
 
 public:
     StartWindow()
-        : gui::Window(gui::Size(400, 300))
-        , _view([this](bool vsBot)
+        // Sized for the content: banner + two labelled combo boxes
+        // (difficulty, side) + two buttons.
+        : gui::Window(gui::Size(420, 470))
+        , _view([this](bool vsBot, int budgetMs, bool botIsWhite)
             {
                 // IMPORTANT: Make MainWindow a CHILD of StartWindow,
                 // so StartWindow stays the "main window" and app doesn't exit.
                 auto* gameWin = new MainWindow(this);
-                gameWin->setStartMode(vsBot);
+                gameWin->setStartMode(vsBot, budgetMs, botIsWhite);
                 gameWin->open();
 
-                // No setVisible(false) in this header, so we just "park" the start window:
+                // Park the start window while the game is open. It can't be
+                // closed (it's the app's main window -- closing it would
+                // quit), so it gets frozen and pushed out of the way.
+                //
+                // It used to be resized to 1x1 here. A 1x1 window still
+                // gets a title bar, so the OS had to squeeze the
+                // minimise/close/fullscreen buttons into a few pixels --
+                // which is why those controls looked distorted, and left a
+                // stray sliver in the top-left corner of the screen.
+                // Moving it off-screen at its natural size avoids that
+                // entirely: nothing is rendered at an impossible size.
                 freeze();                          // disables interactions
                 setResizable(false);
-                setGeometry(gui::Geometry(0, 0, 1, 1), true); // make it tiny (acts like hidden)
+                setGeometry(gui::Geometry(-4000, -4000, 420, 470), true);
             })
     {
         setTitle(tr("CHESS"));

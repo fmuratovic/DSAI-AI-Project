@@ -14,13 +14,32 @@
         <!-- Chess board -->
         <Res id="board" path="Work/Common/Images/Chess/ChessBoard1024.jpg"/>
 
-        <!-- Chess pieces -->
-        <Res id="blackKing" path="Work/Common/Images/Chess/DarkKing.png"/>
-        <Res id="whiteKing" path="Work/Common/Images/Chess/WhiteKing.png"/>
-        <Res id="whitePawn" path="Work/Common/Images/Chess/WhitePawn.png"/>
+        <!-- Menu background -->
+        <Res id="chessBg" path=":../assets/chess_bg.jpg"/>
 
-        <!-- Alpha channel -> PNG required -->
-        <Res id="whiteQueen" path="Work/Common/Images/Chess/QueenWhite.png"/>
+        <!-- Chess pieces.
+             These were previously loaded in code as bare relative paths
+             ("../assets/bk.png"), which resolve against the process's
+             CURRENT WORKING DIRECTORY at runtime rather than the
+             executable's location. That only works when the app is launched
+             from the build output folder: a macOS .app started from Finder
+             has a working directory of "/", so the pieces silently failed
+             to load. Registering them here lets the code reference them by
+             resource id (":blackKing"), which the framework resolves
+             relative to the bundled resources on every platform. -->
+        <Res id="blackKing"   path=":../assets/bk.png"/>
+        <Res id="blackQueen"  path=":../assets/bq.png"/>
+        <Res id="blackRook"   path=":../assets/br.png"/>
+        <Res id="blackBishop" path=":../assets/bb.png"/>
+        <Res id="blackKnight" path=":../assets/bn.png"/>
+        <Res id="blackPawn"   path=":../assets/bp.png"/>
+
+        <Res id="whiteKing"   path=":../assets/wk.png"/>
+        <Res id="whiteQueen"  path=":../assets/wq.png"/>
+        <Res id="whiteRook"   path=":../assets/wr.png"/>
+        <Res id="whiteBishop" path=":../assets/wb.png"/>
+        <Res id="whiteKnight" path=":../assets/wn.png"/>
+        <Res id="whitePawn"   path=":../assets/wp.png"/>
     </Images>
 
     <Sounds>

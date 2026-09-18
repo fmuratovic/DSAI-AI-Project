@@ -34,5 +34,23 @@
         <Res id="lblSpeed" tr="Animation speed:"/>
         <Res id="chbRandomSol" tr="Generate random solution"/>
         <Res id="chbPlaySound" tr="Play sound while searching"/>
+        <!-- Start screen / game status (added) -->
+        <Res id="Difficulty" tr="Difficulty"/>
+        <Res id="Easy" tr="Easy"/>
+        <Res id="Normal" tr="Normal"/>
+        <Res id="Hard" tr="Hard"/>
+        <Res id="Expert" tr="Expert"/>
+        <Res id="Play as" tr="Play as"/>
+        <Res id="Promote pawns to" tr="Promote pawns to"/>
+        <Res id="Queen" tr="Queen"/>
+        <Res id="Rook" tr="Rook"/>
+        <Res id="Bishop" tr="Bishop"/>
+        <Res id="Knight" tr="Knight"/>
+        <Res id="New Game" tr="New Game"/>
+        <Res id="Multiplayer" tr="Multiplayer"/>
+        <Res id="botThinking" tr="Chess - thinking..."/>
+        <Res id="gameOver" tr="Game over"/>
+        <Res id="newGame" tr="New game"/>
+        <Res id="keepBoard" tr="Keep board"/>
      </Translations>
 </DevRes>
