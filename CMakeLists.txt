@@ -26,16 +26,35 @@ if (WIN32)
 	string(REPLACE "\\" "/" HOME_ROOT "${HOME_ROOT}")
 endif()
 set(WORK_ROOT ${HOME_ROOT}/Work)
-set(NATID_SDK_ROOT ${WORK_ROOT}) 
+set(NATID_SDK_ROOT ${WORK_ROOT})
 if (NOT EXISTS "${WORK_ROOT}/DevEnv/Common.cmake")
 	message(FATAL_ERROR
 		"natGUI framework not found at ${WORK_ROOT}/DevEnv. This project needs "
 		"the course framework installed under <home>/Work. Current home was "
 		"detected as: ${HOME_ROOT}")
 endif()
-include(${WORK_ROOT}/DevEnv/Common.cmake) 
+include(${WORK_ROOT}/DevEnv/Common.cmake)
 #END dio koji ide u sve solutions
 
 include(${WORK_ROOT}/DevEnv/natGUI.cmake)
 
 include(chess.cmake)
+
+# macOS: the bundled Info.plist is an Xcode template, so its $(...) variables
+# are left unexpanded by the Makefiles and Ninja generators. Finder then fails
+# with "executable is missing" or "damaged or incomplete". Expand them here and
+# ad-hoc sign the bundle, which arm64 requires in order to launch it at all.
+if (APPLE)
+	set(PLIST_TOOL /usr/libexec/PlistBuddy)
+	set(BUNDLE_PLIST $<TARGET_BUNDLE_DIR:${SOLUTION_NAME}>/Contents/Info.plist)
+	add_custom_command(TARGET ${SOLUTION_NAME} POST_BUILD
+		COMMAND ${PLIST_TOOL} -c "Set :CFBundleExecutable ${SOLUTION_NAME}" ${BUNDLE_PLIST}
+		COMMAND ${PLIST_TOOL} -c "Set :CFBundleName ${SOLUTION_NAME}" ${BUNDLE_PLIST}
+		COMMAND ${PLIST_TOOL} -c "Set :CFBundleIdentifier com.example.chess" ${BUNDLE_PLIST}
+		COMMAND ${PLIST_TOOL} -c "Set :CFBundlePackageType APPL" ${BUNDLE_PLIST}
+		COMMAND ${PLIST_TOOL} -c "Set :CFBundleDevelopmentRegion en" ${BUNDLE_PLIST}
+		COMMAND ${PLIST_TOOL} -c "Set :LSMinimumSystemVersion 12.3" ${BUNDLE_PLIST}
+		COMMAND codesign --force --deep -s - $<TARGET_BUNDLE_DIR:${SOLUTION_NAME}>
+		COMMENT "Fixing Info.plist and signing the app bundle"
+	)
+endif()
