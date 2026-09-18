@@ -2,8 +2,11 @@
 <DevRes>
 
     <Images>
-        <!-- Application / UI icons -->
-        <Res id="appIcon" path="Work/Common/Icons/chess_knight_white.png"/>
+        <!-- Application / UI icons.
+             appIcon points at an in-repo asset rather than a path under the
+             user's local framework install, so a fresh clone builds without
+             the icon having to be copied into Work/Common/Icons by hand. -->
+        <Res id="appIcon" path=":../assets/wn.png"/>
 
         <Res id="reset"    path="Work/Common/Icons/arrow_cycle.png"/>
         <Res id="redo"    path="Work/Common/Icons/arrow_right.png"/>
